@@ -12,7 +12,7 @@ export class BoardsService {
         return this.boards
     }
 
-    createBoards(title: string, description: string) {
+    createBoard(title: string, description: string) {
         const board: Board = {
             id: uuid(),
             title,
