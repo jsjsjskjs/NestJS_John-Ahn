@@ -26,7 +26,13 @@ export class BoardsService {
     return board
   }
 
+  // id로 특정 게시물 가져오기
   getBoardById(id: string): Board {
     return this.boards.find((board) => board.id === id)
+  }
+
+  // id로 특정 게시물 삭제하기
+  deleteBoard(id: string): void {
+    this.boards.filter((boards) => boards.id !== id)
   }
 }
