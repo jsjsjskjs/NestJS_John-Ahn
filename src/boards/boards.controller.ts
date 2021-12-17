@@ -5,7 +5,9 @@ import {
   Get,
   Param,
   Patch,
-  Post
+  Post,
+  UsePipes,
+  ValidationPipe
 } from '@nestjs/common'
 import { Board, BoardStatus } from './board.model'
 import { BoardsService } from './boards.service'
@@ -21,6 +23,7 @@ export class BoardsController {
   }
 
   @Post()
+  @UsePipes(ValidationPipe) // 이미 만들어진 Built-in Pipes 사용
   createBoard(@Body() createBoardDto: CreateBoardDto): Board {
     return this.boardsService.createBoard(createBoardDto)
   }
@@ -38,6 +41,7 @@ export class BoardsController {
     this.boardsService.deleteBoard(id)
   }
 
+  // 특정 게시물 업데이트, id는 param에서 status는 body에서
   @Patch('/:id/status')
   updateBoardStatus(
     @Param('id') id: string,
