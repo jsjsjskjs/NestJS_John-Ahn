@@ -11,9 +11,13 @@ export class BoardsService {
   constructor(
     @InjectRepository(BoardRepository)
     private boardRepository: BoardRepository,    
-  ){}
+  ) { }
 
-  async getBoardById(id: number): Promise <Board> { // 정의한 entity에 맞게 리턴값이 나오도록
+  createBoard(createBoardDto: CreateBoardDto): Promise<Board> {
+    return this.boardRepository.createBoard(createBoardDto)
+  }
+
+  async getBoardById(id: number): Promise<Board> { // 정의한 entity에 맞게 리턴값이 나오도록
     const found = await this.boardRepository.findOne(id)
 
     if(!found) {
