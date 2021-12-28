@@ -26,11 +26,24 @@ export class BoardsController {
     return this.boardsService.createBoard(createBoardDto)
   }
 
+  @Get()
+  getAllBoard(): Promise<Board[]> {
+    return this.boardsService.getAllBoards()
+  }
+
   @Get('/:id')
   getBoardById(@Param('id') id: number): Promise<Board> {
     return this.boardsService.getBoardById(id)
   }
-  
+
+  @Patch('/:id/status')
+  updateBoardStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('status', BoardStatusValidationPipe) status: BoardStatus
+  ): Promise<Board> {
+    return this.boardsService.updateBoardStatus(id, status)
+  }
+
   @Delete('/:id')
   //내장 Pipe => ParseIntPipe를 사용
   deleteBoard(@Param('id', ParseIntPipe) id: number): Promise<void> {

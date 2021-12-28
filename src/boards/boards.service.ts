@@ -17,6 +17,10 @@ export class BoardsService {
     return this.boardRepository.createBoard(createBoardDto)
   }
 
+  async getAllBoards(): Promise<Board[]> {
+    return this.boardRepository.find()
+  }
+
   async getBoardById(id: number): Promise<Board> { // 정의한 entity에 맞게 리턴값이 나오도록
     const found = await this.boardRepository.findOne(id)
 
@@ -24,6 +28,14 @@ export class BoardsService {
       throw new NotFoundException(`${id}를 가진 게시물을 찾지 못했습니다`)
     }
     return found
+  }
+
+  async updateBoardStatus(id: number, status: BoardStatus): Promise<Board> {
+    const board = await this.getBoardById(id)
+
+    board.status = status
+    await this.boardRepository.save(board)
+    return board    
   }
 
   async deleteBoard(id: number): Promise<void> {
