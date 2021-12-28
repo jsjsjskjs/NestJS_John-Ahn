@@ -25,6 +25,15 @@ export class BoardsService {
     }
     return found
   }
+
+  async deleteBoard(id: number): Promise<void> {
+    const result = await this.boardRepository.delete(id)
+    
+    if(result.affected === 0) {
+      throw new NotFoundException(`삭제 할 ${id}번 게시물이 존재하지 않습니다`)
+    }
+    console.log('result', result)
+  }
   /*
   // 다른 컴포넌트에서 수정할 수 없도록 private 사용
   // boards의 타입을 정할 때 []이라고 초기화 했기 때문에 ': Board[]' 라고 타입을 정해줘야 한다
