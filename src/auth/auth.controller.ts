@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards, ValidationPipe } from '@nestjs/common'
+import { Body, Controller, HttpCode, Post, Req, UseGuards, ValidationPipe } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { AuthService } from './auth.service'
 import { AuthCredentialsDto } from './dto/auth-credential.dto'
@@ -20,8 +20,8 @@ export class AuthController {
   }
 
   @Post('/test')
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard()) //미들웨어
   authTest(@GetUser() user: User) {
-    console.log('user', user)
+    return user
   }
 }
