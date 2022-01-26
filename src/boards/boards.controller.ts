@@ -35,29 +35,31 @@ export class BoardsController {
   }
 
   @Get()
-  getAllBoard(
-    @GetUser() user: User
-  ): Promise<Board[]> {
+  getAllBoard(@GetUser() user: User): Promise<Board[]> {
     return this.boardsService.getAllBoards(user)
   }
 
   @Get('/:id')
-  getBoardById(@Param('id') id: number): Promise<Board> {
-    return this.boardsService.getBoardById(id)
+  getBoardById(@Param('id') id: number, @GetUser() user: User): Promise<Board> {
+    return this.boardsService.getBoardById(id, user)
   }
 
   @Patch('/:id/status')
   updateBoardStatus(
     @Param('id', ParseIntPipe) id: number,
-    @Body('status', BoardStatusValidationPipe) status: BoardStatus
+    @Body('status', BoardStatusValidationPipe) status: BoardStatus,
+    @GetUser() user: User
   ): Promise<Board> {
-    return this.boardsService.updateBoardStatus(id, status)
+    return this.boardsService.updateBoardStatus(id, status, user)
   }
 
   @Delete('/:id')
   //내장 Pipe => ParseIntPipe를 사용
-  deleteBoard(@Param('id', ParseIntPipe) id: number): Promise<void> {
-    return this.boardsService.deleteBoard(id)
+  deleteBoard(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: User
+  ): Promise<void> {
+    return this.boardsService.deleteBoard(id, user)
   }
   /*
   constructor(private boardsService: BoardsService) {}

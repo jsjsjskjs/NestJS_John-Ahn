@@ -25,13 +25,15 @@ export class BoardsService {
     query.where('board.userId = :userId', { userId: user.id })
 
     // getMany()는 조건에 맞는 모든 게시물을 다 가져오는 것
-    const boards = await query.getMany() 
+    const boards = await query.getMany()
     return boards
   }
 
-  async getBoardById(id: number): Promise<Board> {
+  async getBoardById(id: number, user: User): Promise<Board> {
     // 정의한 entity에 맞게 리턴값이 나오도록
-    const found = await this.boardRepository.findOne(id)
+    const found = await this.boardRepository.findOne({
+      where: { id, userId: user.id }
+    })
 
     if (!found) {
       throw new NotFoundException(`${id}를 가진 게시물을 찾지 못했습니다`)
@@ -39,16 +41,20 @@ export class BoardsService {
     return found
   }
 
-  async updateBoardStatus(id: number, status: BoardStatus): Promise<Board> {
-    const board = await this.getBoardById(id)
+  async updateBoardStatus(
+    id: number,
+    status: BoardStatus,
+    user: User
+  ): Promise<Board> {
+    const board = await this.getBoardById(id, user)
 
     board.status = status
     await this.boardRepository.save(board)
     return board
   }
 
-  async deleteBoard(id: number): Promise<void> {
-    const result = await this.boardRepository.delete(id)
+  async deleteBoard(id: number, user: User): Promise<void> {
+    const result = await this.boardRepository.delete({ id, userId: user.id })
 
     if (result.affected === 0) {
       throw new NotFoundException(`삭제 할 ${id}번 게시물이 존재하지 않습니다`)
