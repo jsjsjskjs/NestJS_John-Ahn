@@ -4,27 +4,36 @@ import { v1 as uuid } from 'uuid' // uuid의 version을 v1으로 사용한다는
 import { CreateBoardDto } from './dto/create-board.dto'
 import { InjectRepository } from '@nestjs/typeorm'
 import { BoardRepository } from './board.repository'
-import { Board } from "./board.entity";
+import { Board } from './board.entity'
+import { User } from 'src/auth/user.entity'
 
 @Injectable()
 export class BoardsService {
   constructor(
     @InjectRepository(BoardRepository)
-    private boardRepository: BoardRepository,    
-  ) { }
+    private boardRepository: BoardRepository
+  ) {}
 
-  createBoard(createBoardDto: CreateBoardDto): Promise<Board> {
-    return this.boardRepository.createBoard(createBoardDto)
+  createBoard(createBoardDto: CreateBoardDto, user: User): Promise<Board> {
+    return this.boardRepository.createBoard(createBoardDto, user)
   }
 
-  async getAllBoards(): Promise<Board[]> {
-    return this.boardRepository.find()
+  async getAllBoards(user: User): Promise<Board[]> {
+    // 쿼리를 사용해서 구현해보자
+    const query = this.boardRepository.createQueryBuilder('board')
+
+    query.where('board.userId = :userId', { userId: user.id })
+
+    // getMany()는 조건에 맞는 모든 게시물을 다 가져오는 것
+    const boards = await query.getMany() 
+    return boards
   }
 
-  async getBoardById(id: number): Promise<Board> { // 정의한 entity에 맞게 리턴값이 나오도록
+  async getBoardById(id: number): Promise<Board> {
+    // 정의한 entity에 맞게 리턴값이 나오도록
     const found = await this.boardRepository.findOne(id)
 
-    if(!found) {
+    if (!found) {
       throw new NotFoundException(`${id}를 가진 게시물을 찾지 못했습니다`)
     }
     return found
@@ -35,13 +44,13 @@ export class BoardsService {
 
     board.status = status
     await this.boardRepository.save(board)
-    return board    
+    return board
   }
 
   async deleteBoard(id: number): Promise<void> {
     const result = await this.boardRepository.delete(id)
-    
-    if(result.affected === 0) {
+
+    if (result.affected === 0) {
       throw new NotFoundException(`삭제 할 ${id}번 게시물이 존재하지 않습니다`)
     }
     console.log('result', result)
